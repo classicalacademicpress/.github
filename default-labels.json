@@ -1,0 +1,42 @@
+[
+  {
+    "name": "bug",
+    "color": "EF4444",
+    "description": "unintended behavior that can be related to features"
+  },
+  {
+    "name": "chore",
+    "color": "D1D5DB",
+    "description": "stories that are necessary but provide no direct, obvious value to the customer"
+  },
+  {
+    "name": "feature (0 points)",
+    "color": "ECFDF5",
+    "description": "stories that provide verifiable business value to the team’s customer"
+  },
+  {
+    "name": "feature (1 point)",
+    "color": "D1FAE5",
+    "description": "stories that provide verifiable business value to the team’s customer"
+  },
+  {
+    "name": "feature (2 points)",
+    "color": "A7F3D0",
+    "description": "stories that provide verifiable business value to the team’s customer"
+  },
+  {
+    "name": "feature (3 points)",
+    "color": "6EE7B7",
+    "description": "stories that provide verifiable business value to the team’s customer"
+  },
+  {
+    "name": "feature (5 points)",
+    "color": "10B981",
+    "description": "consider creating a milestone for this with more fine-grained pieces"
+  },
+  {
+    "name": "feature (8 points)",
+    "color": "065F46",
+    "description": "consider creating a milestone for this with more fine-grained pieces"
+  }
+]
