@@ -63,7 +63,9 @@ const createLabel = (
 
 const deleteLabel = (
   label: Label,
-): Promise<Response> => (console.info(`Deleting label ${label.name}...`),
+): Promise<
+  Response
+> => (console.info(`Deleting label ${label.name} at ${label.url}...`),
   fetch(
     `${label.url}?access_token=${TOKEN}`,
     {
@@ -99,8 +101,12 @@ const decoder: TextDecoder = new TextDecoder("utf-8");
 const data: BufferSource = Deno.readFileSync("default-labels.json");
 const defaultLabels: Label[] = JSON.parse(decoder.decode(data));
 
-const updateLabels = (repoNames: string[]): Promise<Response[]> =>
-  Promise.all(repoNames.map(getLabels)).then((
+const updateLabels = (
+  repos: string[],
+): Promise<
+  Response[]
+> => (console.info(`Found the following repos...\n${repos.join("\n")}`),
+  Promise.all(repos.map(getLabels)).then((
     responses: Response[],
   ): Promise<Label[][]> => Promise.all(responses.map(labelToJson))).then((
     json: Label[][],
@@ -109,8 +115,8 @@ const updateLabels = (repoNames: string[]): Promise<Response[]> =>
       json.flat().filter(isCustomLabel(defaultLabels)).map(deleteLabel),
     )
   ).then((_responses: Response[]): Promise<Response[]> =>
-    Promise.all(repoNames.map(addDefaultLabels(defaultLabels)).flat())
-  );
+    Promise.all(repos.map(addDefaultLabels(defaultLabels)).flat())
+  ));
 
 getRepos().then(repoToJson).then(
   (json: Repo[]): string[] => json.map(repoName),
