@@ -6,11 +6,10 @@ labels: chore
 assignees: ''
 ---
 
-**What is the context?**
+### What is the context?
 
-<!-- Ex: I was told it was a good idea -->
+<!-- Ex: They told me it was a good idea -->
 
-**What are the objectives?**
+### What are the objectives?
 
-<!-- Ex: I want to deliver! -->
-
+<!-- Ex: I want to make them happy! -->
