@@ -10,6 +10,11 @@
     "description": "stories that are necessary but provide no direct, obvious value to the customer"
   },
   {
+    "name": "feature (no estimate)",
+    "color": "FFFFFF",
+    "description": "stories that provide verifiable business value to the team’s customer"
+  },
+  {
     "name": "feature (0 points)",
     "color": "ECFDF5",
     "description": "stories that provide verifiable business value to the team’s customer"
