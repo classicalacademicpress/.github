@@ -14,6 +14,3 @@ assignees: ''
 
 <!-- Ex: I want to deliver! -->
 
-**Additional notes**
-
-<!-- More context -->
