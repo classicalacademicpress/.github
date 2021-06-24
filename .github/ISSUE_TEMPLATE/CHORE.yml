@@ -1,0 +1,22 @@
+name: Chore
+description: Stories that are necessary but provide no direct, obvious value to the customer
+labels: [chore]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: What is the context?
+      placeholder: They told me it was a good idea
+    validations:
+      required: true
+  - type: textarea
+    id: objectives
+    attributes:
+      label: What are the objectives?
+      placeholder: Make them happy
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes
