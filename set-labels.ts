@@ -1,123 +1,124 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
+import { encode } from "https://deno.land/std/encoding/base64.ts";
 
 // Config
 
-const { ORG, TOKEN } = config();
+const { ORG, USERNAME, TOKEN } = config();
 
 // Types
 
-type Repo = { name: string };
+type Repo = { name: string; archived: boolean };
 
 type Label = {
-  id?: number;
-  node_id?: string;
-  url?: string;
   name: string;
   description: string;
   color: string;
-  default?: boolean;
 };
 
-// API calls
+// API requests
 
-const getRepos = (): Promise<Response> =>
-  fetch(
-    `https://api.github.com/orgs/${ORG}/repos?access_token=${TOKEN}`,
-    {
-      headers: {
-        "Accept": "application/vnd.github.v3+json",
-      },
+const signature: string = encode(USERNAME + ":" + TOKEN);
+
+const request = (
+  path: string,
+  params?: { method?: string; body?: string },
+): Promise<Response> =>
+  fetch(`https://api.github.com${path}`, {
+    headers: {
+      "Accept": "application/vnd.github.v3+json",
+      "Authorization": `Basic ${signature}`,
     },
-  );
+    ...params,
+  });
 
-const getLabels = (repo: string): Promise<Response> =>
-  fetch(
-    `https://api.github.com/repos/${ORG}/${repo}/labels?access_token=${TOKEN}`,
-    {
-      headers: {
-        "Accept": "application/vnd.github.v3+json",
-      },
-    },
-  );
+const getReposByType = (type: string): Promise<Response> =>
+  request(`/orgs/${ORG}/repos?type=${type}`);
 
-const createLabel = (
-  repo: string,
-  label: Label,
-): Promise<
-  Response
-> => (console.info(`Creating label ${label.name} on ${repo}...`),
-  fetch(
-    `https://api.github.com/repos/${ORG}/${repo}/labels?access_token=${TOKEN}`,
-    {
-      headers: {
-        "Accept": "application/vnd.github.v3+json",
-      },
+const getRepos = async (): Promise<Repo[]> => {
+  const types: string[] = ["public", "private"];
+  const requests: Promise<Response>[] = types.map(getReposByType);
+  const toJson = ((response: Response): Promise<Repo> => response.json());
+
+  return await Promise.all(requests).then(
+    (responses: Response[]) => Promise.all(responses.map(toJson)),
+  ).then(
+    (json: Repo[]) => json.flat().filter((repo: Repo) => !repo.archived),
+  );
+};
+
+const getLabels = (repo: string): Promise<Label[]> =>
+  request(`/repos/${ORG}/${repo}/labels?`).then((
+    response: Response,
+  ) => response.json());
+
+const createLabel = (repo: string) =>
+  (
+    label: Label,
+  ): Promise<
+    Response
+  > => (console.info(`Creating label ${label.name} on ${repo}...`),
+    request(`/repos/${ORG}/${repo}/labels?`, {
       method: "POST",
       body: JSON.stringify({
         name: label.name,
         color: label.color,
         description: label.description,
       }),
-    },
-  ));
+    }));
 
-const deleteLabel = (
-  label: Label,
-): Promise<
-  Response
-> => (console.info(`Deleting label ${label.name} at ${label.url}...`),
-  fetch(
-    `${label.url}?access_token=${TOKEN}`,
-    {
-      headers: {
-        "Accept": "application/vnd.github.v3+json",
+const deleteLabel = (repo: string) =>
+  (
+    label: Label,
+  ): Promise<
+    Response
+  > => (console.info(`Deleting label ${label.name} on ${repo}...`),
+    request(
+      `/repos/${ORG}/${repo}/labels/${label.name}`,
+      {
+        method: "DELETE",
       },
-      method: "DELETE",
-    },
-  ));
+    ));
 
-// Helpers
+// Data helpers
 
-const repoToJson = (response: Response): Promise<Repo[]> => response.json();
-const labelToJson = (response: Response): Promise<Label[]> => response.json();
-const repoName = (repo: Repo): string => repo.name;
+const labelsEqual = (a: Label) =>
+  (b: Label): boolean =>
+    a.name === b.name &&
+    a.color === b.color &&
+    a.description === b.description;
 
-const addDefaultLabels = (defaultLabels: Label[]) =>
-  (repoName: string) =>
-    defaultLabels.map((defaultLabel: Label): Promise<Response> =>
-      createLabel(repoName, defaultLabel)
-    );
+const labelFound = (list: Label[]) =>
+  (label: Label): boolean => list.find(labelsEqual(label)) !== undefined;
 
 const isCustomLabel = (defaultLabels: Label[]) =>
-  (label: Label) =>
-    defaultLabels.find((defaultLabel: Label): boolean =>
-      defaultLabel.name === label.name && defaultLabel.color === label.color &&
-      defaultLabel.description === label.description
-    ) === undefined;
+  (label: Label) => !labelFound(defaultLabels)(label);
+
+const missingDefaults = (defaultLabels: Label[], labels: Label[]): Label[] =>
+  defaultLabels.filter((defaultLabel) => !labelFound(labels)(defaultLabel));
 
 // Program
 
-const decoder: TextDecoder = new TextDecoder("utf-8");
-const data: BufferSource = Deno.readFileSync("default-labels.json");
-const defaultLabels: Label[] = JSON.parse(decoder.decode(data));
+Deno.readFile("labels.json").then(async (data: BufferSource) => {
+  const decoder: TextDecoder = new TextDecoder("utf-8");
+  const defaultLabels: Label[] = JSON.parse(decoder.decode(data));
+  const repoList = (repos: Repo[]): string =>
+    repos.map((r) => r.name).sort().join("\n  ");
 
-const updateLabels = (
-  repos: string[],
-): Promise<
-  Response[]
-> => (console.info(`Found the following repos...\n${repos.join("\n")}`),
-  Promise.all(repos.map(getLabels)).then((
-    responses: Response[],
-  ): Promise<Label[][]> => Promise.all(responses.map(labelToJson))).then((
-    json: Label[][],
-  ): Promise<Response[]> =>
-    Promise.all(
-      json.flat().filter(isCustomLabel(defaultLabels)).map(deleteLabel),
-    )
-  ).then((_responses: Response[]): Promise<Response[]> =>
-    Promise.all(repos.map(addDefaultLabels(defaultLabels)).flat())
-  ));
-
-getRepos().then(repoToJson).then(
-  (json: Repo[]): string[] => json.map(repoName),
-).then(updateLabels).then((_) => console.info("Done!"));
+  return await getRepos().then((
+    repos,
+  ) => (console.info(`Checking the following repos...\n  ${repoList(repos)}`),
+    repos.map((repo: Repo) =>
+      getLabels(repo.name).then((labels) =>
+        Promise.all(
+          labels.filter((isCustomLabel(defaultLabels))).map(
+            deleteLabel(repo.name),
+          ),
+        ).then((_) =>
+          Promise.all(
+            missingDefaults(defaultLabels, labels).map(createLabel(repo.name)),
+          )
+        )
+      )
+    ))
+  );
+}).then((_) => console.log("All done!"));
