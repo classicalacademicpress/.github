@@ -6,7 +6,8 @@
 
 ```txt
 ORG=classicalacademicpress
-TOKEN={SOME_GITHUB_TOKEN}
+USERNAME={YOUR_USERNAME}
+TOKEN={YOUR_GITHUB_TOKEN}
 ```
 
 ## Repo labels
