@@ -11,5 +11,5 @@ TOKEN={SOME_GITHUB_TOKEN}
 
 ## Repo labels
 
-1. Add labels to `default-labels.json`
-2. Run `deno run --allow-read --allow-net set-labels.ts`
+1. Add labels to `labels.json`
+2. Run `deno run --allow-read --allow-net labellers.ts`
