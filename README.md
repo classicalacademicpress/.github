@@ -1,4 +1,4 @@
-# Org repo defaults
+# Repo defaults
 
 GitHub templates for consistency across projects.
 
