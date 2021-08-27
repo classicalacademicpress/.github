@@ -32,7 +32,7 @@ const request = (
   });
 
 const getReposByType = (type: string): Promise<Response> =>
-  request(`/orgs/${ORG}/repos?type=${type}`);
+  request(`/orgs/${ORG}/repos?per_page=50&type=${type}`);
 
 const getRepos = async (): Promise<Repo[]> => {
   const types: string[] = ["public", "private"];
