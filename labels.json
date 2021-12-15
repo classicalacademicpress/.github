@@ -1,5 +1,20 @@
 [
   {
+    "name": "CAP",
+    "color": "A0D9D9",
+    "description": "https://classicalacademicpress.com/"
+  },
+  {
+    "name": "ClassicalU",
+    "color": "11174F",
+    "description": "https://classicalu.com/"
+  },
+  {
+    "name": "Scholé Academy",
+    "color": "6B1328",
+    "description": "https://scholeacademy.com/"
+  },
+  {
     "name": "bug",
     "color": "EF4444",
     "description": "unintended behavior"
@@ -10,38 +25,13 @@
     "description": "necessary work"
   },
   {
-    "name": "feature (no estimate)",
-    "color": "FFFFFF",
-    "description": "chore + customer value"
-  },
-  {
-    "name": "feature (0 points)",
-    "color": "ECFDF5",
-    "description": "chore + customer value"
-  },
-  {
-    "name": "feature (1 point)",
-    "color": "D1FAE5",
-    "description": "chore + customer value"
-  },
-  {
-    "name": "feature (2 points)",
+    "name": "feature",
     "color": "A7F3D0",
     "description": "chore + customer value"
   },
   {
-    "name": "feature (3 points)",
-    "color": "6EE7B7",
-    "description": "chore + customer value"
-  },
-  {
-    "name": "feature (5 points)",
-    "color": "10B981",
-    "description": "consider a milestone"
-  },
-  {
-    "name": "feature (8 points)",
-    "color": "065F46",
-    "description": "consider a milestone"
+    "name": "noop",
+    "color": "FFFFFF",
+    "description": "work invalidated"
   }
 ]
