@@ -1,4 +1,5 @@
-> [!WARNING] New repos no longer get these defaults and we are no longer adding these labels. However, we do need the profile image still and existing projects have these templates.
+> [!WARNING]
+> New repos no longer get these defaults and we are no longer adding these labels. However, we do need the profile image still and existing projects have these templates.
 
 # Repo defaults
 
